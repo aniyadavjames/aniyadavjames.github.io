@@ -2,6 +2,10 @@
    BASIC PAGE
    ============================== */
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -21,6 +25,7 @@ header {
 
     position: sticky;
     top: 0;
+
     z-index: 1000;
 
     padding: 20px 40px;
@@ -77,20 +82,28 @@ header {
    ============================== */
 
 nav {
-    text-align: center;
-
     background: white;
+
+    text-align: center;
 
     padding: 15px;
 
     position: sticky;
+
+    /*
+       This places navigation directly
+       below the profile header.
+    */
     top: 150px;
 
     z-index: 900;
+
+    border-bottom: 1px solid #ddd;
 }
 
 nav a {
     text-decoration: none;
+
     color: #333;
 
     margin: 0 15px;
@@ -117,10 +130,18 @@ main {
 
 
 /* ==============================
-   SECTIONS
+   SECTION SCROLL FIX
    ============================== */
 
+/*
+   When clicking a navigation link,
+   the section will stop below the
+   sticky header + navigation.
+*/
+
 section {
+    scroll-margin-top: 210px;
+
     background: white;
 
     padding: 30px;
@@ -163,7 +184,7 @@ section h2 {
 
 
 /* ==============================
-   MOBILE / PHONE
+   MOBILE
    ============================== */
 
 @media (max-width: 600px) {
@@ -191,13 +212,20 @@ section h2 {
 
     nav {
         position: sticky;
-        top: 130px;
+
+        /*
+           Smaller header on mobile
+        */
+        top: 105px;
+
         padding: 10px 5px;
     }
 
     nav a {
         display: inline-block;
+
         margin: 5px;
+
         font-size: 14px;
     }
 
@@ -207,5 +235,10 @@ section h2 {
 
     section {
         padding: 20px;
+
+        /*
+           Header + navigation on mobile
+        */
+        scroll-margin-top: 160px;
     }
 }

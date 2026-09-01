@@ -265,3 +265,11 @@ section h2 {
 .linkedin-button:hover {
     background: #005582;
 }
+#contact a {
+    color: #0077cc;
+    text-decoration: none;
+}
+
+#contact a:hover {
+    text-decoration: underline;
+}

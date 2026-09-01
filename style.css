@@ -242,3 +242,26 @@ section h2 {
         scroll-margin-top: 160px;
     }
 }
+.linkedin-button {
+    display: inline-block;
+
+    margin-top: 12px;
+
+    padding: 8px 18px;
+
+    background: #0077b5;
+
+    color: white;
+
+    text-decoration: none;
+
+    border-radius: 5px;
+
+    font-weight: bold;
+
+    font-size: 14px;
+}
+
+.linkedin-button:hover {
+    background: #005582;
+}

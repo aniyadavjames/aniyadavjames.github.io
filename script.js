@@ -1,12 +1,17 @@
 // ==========================================
-// SCROLL REVEAL ANIMATION
+// WAIT FOR PAGE TO LOAD
 // ==========================================
 
 document.addEventListener("DOMContentLoaded", function () {
 
+
+    // ==========================================
+    // 1. SCROLL REVEAL ANIMATION
+    // ==========================================
+
     const sections = document.querySelectorAll("section");
 
-    const observer = new IntersectionObserver(
+    const sectionObserver = new IntersectionObserver(
         function (entries) {
 
             entries.forEach(function (entry) {
@@ -15,32 +20,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     entry.target.classList.add("show");
 
-                    // Stop observing after animation
-                    observer.unobserve(entry.target);
+                    // Animation happens only once
+                    sectionObserver.unobserve(entry.target);
                 }
 
             });
 
         },
         {
-            threshold: 0.1
+            threshold: 0.08
         }
     );
 
 
     sections.forEach(function (section) {
-
-        observer.observe(section);
-
+        sectionObserver.observe(section);
     });
 
 
+
     // ==========================================
-    // ACTIVE NAVIGATION
+    // 2. NAVIGATION ELEMENTS
     // ==========================================
 
     const navLinks = document.querySelectorAll("nav a");
 
+    const stickyTop = document.querySelector(".sticky-top");
+
+
+
+    // ==========================================
+    // 3. SET ACTIVE NAVIGATION
+    // ==========================================
 
     function setActiveLink(id) {
 
@@ -48,8 +59,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
             link.classList.remove("active");
 
-            if (link.getAttribute("href") === "#" + id) {
+            if (
+                link.getAttribute("href") === "#" + id
+            ) {
+
                 link.classList.add("active");
+
             }
 
         });
@@ -57,8 +72,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+
     // ==========================================
-    // NAVIGATION CLICK
+    // 4. NAVIGATION CLICK
     // ==========================================
 
     navLinks.forEach(function (link) {
@@ -67,38 +83,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
             event.preventDefault();
 
+
             const targetId =
                 this.getAttribute("href").substring(1);
+
 
             const targetSection =
                 document.getElementById(targetId);
 
-            if (!targetSection) return;
+
+            if (!targetSection) {
+                return;
+            }
 
 
-            const stickyTop =
-                document.querySelector(".sticky-top");
-
-            const headerHeight =
+            // Get actual height of sticky header
+            const stickyHeight =
                 stickyTop.offsetHeight;
 
 
-            const targetPosition =
+            // Calculate exact scroll position
+            const sectionPosition =
                 targetSection.getBoundingClientRect().top +
-                window.scrollY -
-                headerHeight -
+                window.scrollY;
+
+
+            const scrollPosition =
+                sectionPosition -
+                stickyHeight -
                 20;
 
 
+            // Scroll smoothly
             window.scrollTo({
 
-                top: targetPosition,
+                top: scrollPosition,
 
                 behavior: "smooth"
 
             });
 
 
+            // Highlight immediately
             setActiveLink(targetId);
 
         });
@@ -106,17 +132,20 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
+
     // ==========================================
-    // ACTIVE NAVIGATION WHILE SCROLLING
+    // 5. ACTIVE NAVIGATION WHILE SCROLLING
     // ==========================================
 
     function updateActiveNavigation() {
 
-        const stickyTop =
-            document.querySelector(".sticky-top");
-
-        const headerHeight =
+        const stickyHeight =
             stickyTop.offsetHeight;
+
+
+        // Position where a section becomes active
+        const activationPoint =
+            stickyHeight + 50;
 
 
         let currentSection = "about";
@@ -128,9 +157,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 section.getBoundingClientRect().top;
 
 
-            if (sectionTop <= headerHeight + 100) {
+            if (sectionTop <= activationPoint) {
 
-                currentSection = section.id;
+                currentSection =
+                    section.id;
 
             }
 
@@ -148,8 +178,9 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
+
     // ==========================================
-    // BACK TO TOP
+    // 6. BACK TO TOP BUTTON
     // ==========================================
 
     const backToTop =
@@ -160,145 +191,190 @@ document.addEventListener("DOMContentLoaded", function () {
 
     backToTop.className = "back-to-top";
 
+    backToTop.setAttribute(
+        "aria-label",
+        "Back to top"
+    );
+
+
     document.body.appendChild(backToTop);
 
 
-    window.addEventListener("scroll", function () {
 
-        if (window.scrollY > 400) {
+    // Show / hide button
 
-            backToTop.classList.add("visible");
+    window.addEventListener(
+        "scroll",
+        function () {
 
-        } else {
+            if (window.scrollY > 400) {
 
-            backToTop.classList.remove("visible");
-
-        }
-
-    });
-
-
-    backToTop.addEventListener("click", function () {
-
-        window.scrollTo({
-
-            top: 0,
-
-            behavior: "smooth"
-
-        });
-
-        setActiveLink("about");
-
-    });
-
-
-    // ==========================================
-    // TYPING ANIMATION
-    // ==========================================
-
-    const typingElement =
-        document.querySelector(".profile-details p");
-
-
-    if (typingElement) {
-
-        const roles = [
-
-            "PhD Research Scholar | IIT Delhi",
-
-            "Computer Science & Engineering Researcher",
-
-            "Researcher | Developer"
-
-        ];
-
-
-        let roleIndex = 0;
-
-        let characterIndex = 0;
-
-        let deleting = false;
-
-
-        function typeEffect() {
-
-            const currentRole =
-                roles[roleIndex];
-
-
-            if (!deleting) {
-
-                typingElement.textContent =
-                    currentRole.substring(
-                        0,
-                        characterIndex + 1
-                    );
-
-                characterIndex++;
-
-
-                if (
-                    characterIndex ===
-                    currentRole.length
-                ) {
-
-                    deleting = true;
-
-                    setTimeout(
-                        typeEffect,
-                        1800
-                    );
-
-                    return;
-
-                }
+                backToTop.classList.add(
+                    "visible"
+                );
 
             } else {
 
-                typingElement.textContent =
-                    currentRole.substring(
-                        0,
-                        characterIndex - 1
-                    );
+                backToTop.classList.remove(
+                    "visible"
+                );
 
-                characterIndex--;
+            }
+
+        }
+    );
 
 
-                if (characterIndex === 0) {
 
-                    deleting = false;
+    // Back to top click
 
-                    roleIndex++;
+    backToTop.addEventListener(
+        "click",
+        function () {
 
-                    if (
-                        roleIndex >= roles.length
-                    ) {
+            window.scrollTo({
 
-                        roleIndex = 0;
+                top: 0,
 
-                    }
+                behavior: "smooth"
+
+            });
+
+            setActiveLink("about");
+
+        }
+    );
+
+
+
+    // ==========================================
+    // 7. PROFESSIONAL TYPEWRITER
+    // ==========================================
+
+    const typingText =
+        document.getElementById("typing-text");
+
+
+    const roles = [
+
+        "PhD Research Scholar | IIT Delhi",
+
+        "Computer Science & Engineering Researcher",
+
+        "Researcher | Developer"
+
+    ];
+
+
+    let roleIndex = 0;
+
+    let characterIndex = 0;
+
+    let deleting = false;
+
+
+
+    function typeWriter() {
+
+        if (!typingText) {
+            return;
+        }
+
+
+        const currentRole =
+            roles[roleIndex];
+
+
+        // ------------------------------
+        // TYPING
+        // ------------------------------
+
+        if (!deleting) {
+
+            typingText.textContent =
+                currentRole.substring(
+                    0,
+                    characterIndex + 1
+                );
+
+
+            characterIndex++;
+
+
+            // Finished typing
+            if (
+                characterIndex ===
+                currentRole.length
+            ) {
+
+                deleting = true;
+
+
+                setTimeout(
+                    typeWriter,
+                    1800
+                );
+
+
+                return;
+            }
+
+        }
+
+
+        // ------------------------------
+        // DELETING
+        // ------------------------------
+
+        else {
+
+            typingText.textContent =
+                currentRole.substring(
+                    0,
+                    characterIndex - 1
+                );
+
+
+            characterIndex--;
+
+
+            // Finished deleting
+            if (characterIndex === 0) {
+
+                deleting = false;
+
+                roleIndex++;
+
+
+                if (
+                    roleIndex >=
+                    roles.length
+                ) {
+
+                    roleIndex = 0;
 
                 }
 
             }
 
-
-            setTimeout(
-                typeEffect,
-                deleting ? 40 : 70
-            );
-
         }
 
 
-        typeEffect();
+        setTimeout(
+            typeWriter,
+            deleting ? 35 : 70
+        );
 
     }
 
 
+    // Start typing
+    typeWriter();
+
+
+
     // ==========================================
-    // PAGE LOAD
+    // 8. PAGE LOAD ANIMATION
     // ==========================================
 
     document.body.classList.add(
@@ -306,7 +382,10 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-    // Set initial navigation
+
+    // ==========================================
+    // 9. INITIAL NAVIGATION
+    // ==========================================
 
     setActiveLink("about");
 

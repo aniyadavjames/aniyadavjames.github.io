@@ -178,13 +178,6 @@ section {
     margin-bottom: 30px;
 
     border-radius: 8px;
-
-    /*
-       Prevents sticky header from
-       covering the section when
-       navigation links are clicked.
-    */
-    scroll-margin-top: 20px;
 }
 
 section h2 {
@@ -295,10 +288,14 @@ section h2 {
 
 
     section {
-        padding: 20px;
+    background: white;
 
-        scroll-margin-top: 20px;
-    }
+    padding: 30px;
+
+    margin-bottom: 30px;
+
+    border-radius: 8px;
+}
 
 }
 

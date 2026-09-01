@@ -2,288 +2,311 @@
 // SCROLL REVEAL ANIMATION
 // ==========================================
 
-const sections = document.querySelectorAll("section");
+document.addEventListener("DOMContentLoaded", function () {
 
-const sectionObserver = new IntersectionObserver(
-    (entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("show");
-            }
-        });
-    },
-    {
-        threshold: 0.1
-    }
-);
+    const sections = document.querySelectorAll("section");
 
-sections.forEach((section) => {
-    sectionObserver.observe(section);
-});
+    const observer = new IntersectionObserver(
+        function (entries) {
 
+            entries.forEach(function (entry) {
 
-// ==========================================
-// NAVIGATION
-// ==========================================
+                if (entry.isIntersecting) {
 
-const navLinks = document.querySelectorAll("nav a");
+                    entry.target.classList.add("show");
 
+                    // Stop observing after animation
+                    observer.unobserve(entry.target);
+                }
 
-// Set active navigation item
+            });
 
-function setActiveLink(id) {
-
-    navLinks.forEach((link) => {
-
-        link.classList.remove("active");
-
-        if (link.getAttribute("href") === "#" + id) {
-            link.classList.add("active");
+        },
+        {
+            threshold: 0.1
         }
+    );
+
+
+    sections.forEach(function (section) {
+
+        observer.observe(section);
 
     });
-}
 
 
-// ==========================================
-// NAVIGATION CLICK
-// ==========================================
+    // ==========================================
+    // ACTIVE NAVIGATION
+    // ==========================================
 
-navLinks.forEach((link) => {
-
-    link.addEventListener("click", function (event) {
-
-        event.preventDefault();
-
-        const targetId = this.getAttribute("href").substring(1);
-
-        const targetSection = document.getElementById(targetId);
-
-        if (!targetSection) return;
+    const navLinks = document.querySelectorAll("nav a");
 
 
-        // Get actual height of sticky header + navigation
+    function setActiveLink(id) {
 
-        const stickyHeader =
+        navLinks.forEach(function (link) {
+
+            link.classList.remove("active");
+
+            if (link.getAttribute("href") === "#" + id) {
+                link.classList.add("active");
+            }
+
+        });
+
+    }
+
+
+    // ==========================================
+    // NAVIGATION CLICK
+    // ==========================================
+
+    navLinks.forEach(function (link) {
+
+        link.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            const targetId =
+                this.getAttribute("href").substring(1);
+
+            const targetSection =
+                document.getElementById(targetId);
+
+            if (!targetSection) return;
+
+
+            const stickyTop =
+                document.querySelector(".sticky-top");
+
+            const headerHeight =
+                stickyTop.offsetHeight;
+
+
+            const targetPosition =
+                targetSection.getBoundingClientRect().top +
+                window.scrollY -
+                headerHeight -
+                20;
+
+
+            window.scrollTo({
+
+                top: targetPosition,
+
+                behavior: "smooth"
+
+            });
+
+
+            setActiveLink(targetId);
+
+        });
+
+    });
+
+
+    // ==========================================
+    // ACTIVE NAVIGATION WHILE SCROLLING
+    // ==========================================
+
+    function updateActiveNavigation() {
+
+        const stickyTop =
             document.querySelector(".sticky-top");
 
         const headerHeight =
-            stickyHeader.offsetHeight;
+            stickyTop.offsetHeight;
 
 
-        // Position section below sticky header
-
-        const targetPosition =
-            targetSection.getBoundingClientRect().top +
-            window.pageYOffset -
-            headerHeight -
-            20;
+        let currentSection = "about";
 
 
-        window.scrollTo({
-            top: targetPosition,
-            behavior: "smooth"
+        sections.forEach(function (section) {
+
+            const sectionTop =
+                section.getBoundingClientRect().top;
+
+
+            if (sectionTop <= headerHeight + 100) {
+
+                currentSection = section.id;
+
+            }
+
         });
 
 
-        // Immediately highlight clicked item
+        setActiveLink(currentSection);
 
-        setActiveLink(targetId);
-
-    });
-
-});
+    }
 
 
-// ==========================================
-// ACTIVE NAVIGATION WHILE SCROLLING
-// ==========================================
-
-function updateActiveNavigation() {
-
-    const stickyHeader =
-        document.querySelector(".sticky-top");
-
-    const headerHeight =
-        stickyHeader.offsetHeight;
+    window.addEventListener(
+        "scroll",
+        updateActiveNavigation
+    );
 
 
-    let currentSection = null;
+    // ==========================================
+    // BACK TO TOP
+    // ==========================================
 
-    sections.forEach((section) => {
+    const backToTop =
+        document.createElement("button");
 
-        const sectionTop =
-            section.getBoundingClientRect().top;
 
-        if (sectionTop <= headerHeight + 80) {
-            currentSection = section;
+    backToTop.innerHTML = "↑";
+
+    backToTop.className = "back-to-top";
+
+    document.body.appendChild(backToTop);
+
+
+    window.addEventListener("scroll", function () {
+
+        if (window.scrollY > 400) {
+
+            backToTop.classList.add("visible");
+
+        } else {
+
+            backToTop.classList.remove("visible");
+
         }
 
     });
 
 
-    if (currentSection) {
-        setActiveLink(currentSection.id);
-    }
-}
+    backToTop.addEventListener("click", function () {
 
+        window.scrollTo({
 
-window.addEventListener(
-    "scroll",
-    updateActiveNavigation
-);
+            top: 0,
 
+            behavior: "smooth"
 
-// ==========================================
-// BACK TO TOP BUTTON
-// ==========================================
+        });
 
-const backToTop =
-    document.createElement("button");
+        setActiveLink("about");
 
-backToTop.innerHTML = "↑";
-
-backToTop.className = "back-to-top";
-
-document.body.appendChild(backToTop);
-
-
-// Show button after scrolling
-
-window.addEventListener("scroll", () => {
-
-    if (window.scrollY > 400) {
-
-        backToTop.classList.add("visible");
-
-    } else {
-
-        backToTop.classList.remove("visible");
-
-    }
-
-});
-
-
-// Scroll to top
-
-backToTop.addEventListener("click", () => {
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
     });
 
-    setActiveLink("about");
 
-});
+    // ==========================================
+    // TYPING ANIMATION
+    // ==========================================
 
-
-// ==========================================
-// TYPING ANIMATION
-// ==========================================
-
-// Select the first profile paragraph
-
-const typingElement =
-    document.querySelector(".profile-details p");
+    const typingElement =
+        document.querySelector(".profile-details p");
 
 
-const roles = [
-    "PhD Research Scholar | IIT Delhi",
-    "Computer Science & Engineering Researcher",
-    "Researcher | Developer"
-];
+    if (typingElement) {
+
+        const roles = [
+
+            "PhD Research Scholar | IIT Delhi",
+
+            "Computer Science & Engineering Researcher",
+
+            "Researcher | Developer"
+
+        ];
 
 
-let roleIndex = 0;
-let characterIndex = 0;
-let deleting = false;
+        let roleIndex = 0;
+
+        let characterIndex = 0;
+
+        let deleting = false;
 
 
-function typeEffect() {
+        function typeEffect() {
 
-    if (!typingElement) return;
-
-    const currentRole =
-        roles[roleIndex];
+            const currentRole =
+                roles[roleIndex];
 
 
-    if (!deleting) {
+            if (!deleting) {
 
-        typingElement.textContent =
-            currentRole.substring(
-                0,
-                characterIndex + 1
-            );
+                typingElement.textContent =
+                    currentRole.substring(
+                        0,
+                        characterIndex + 1
+                    );
 
-        characterIndex++;
+                characterIndex++;
 
 
-        if (
-            characterIndex ===
-            currentRole.length
-        ) {
+                if (
+                    characterIndex ===
+                    currentRole.length
+                ) {
 
-            deleting = true;
+                    deleting = true;
+
+                    setTimeout(
+                        typeEffect,
+                        1800
+                    );
+
+                    return;
+
+                }
+
+            } else {
+
+                typingElement.textContent =
+                    currentRole.substring(
+                        0,
+                        characterIndex - 1
+                    );
+
+                characterIndex--;
+
+
+                if (characterIndex === 0) {
+
+                    deleting = false;
+
+                    roleIndex++;
+
+                    if (
+                        roleIndex >= roles.length
+                    ) {
+
+                        roleIndex = 0;
+
+                    }
+
+                }
+
+            }
+
 
             setTimeout(
                 typeEffect,
-                1800
+                deleting ? 40 : 70
             );
 
-            return;
         }
 
-    } else {
 
-        typingElement.textContent =
-            currentRole.substring(
-                0,
-                characterIndex - 1
-            );
-
-        characterIndex--;
-
-
-        if (characterIndex === 0) {
-
-            deleting = false;
-
-            roleIndex++;
-
-            if (
-                roleIndex >= roles.length
-            ) {
-                roleIndex = 0;
-            }
-
-        }
+        typeEffect();
 
     }
 
 
-    setTimeout(
-        typeEffect,
-        deleting ? 40 : 70
-    );
-}
-
-
-typeEffect();
-
-
-// ==========================================
-// PAGE LOAD
-// ==========================================
-
-window.addEventListener("load", () => {
+    // ==========================================
+    // PAGE LOAD
+    // ==========================================
 
     document.body.classList.add(
         "page-loaded"
     );
 
-    // Start with About highlighted
+
+    // Set initial navigation
 
     setActiveLink("about");
 

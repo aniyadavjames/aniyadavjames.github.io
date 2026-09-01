@@ -81,19 +81,16 @@ header {
    NAVIGATION
    ============================== */
 
+/* ==============================
+   NAVIGATION
+   ============================== */
+
 nav {
     background: white;
-
     text-align: center;
-
     padding: 15px;
 
     position: sticky;
-
-    /*
-       This places navigation directly
-       below the profile header.
-    */
     top: 175px;
 
     z-index: 900;
@@ -103,18 +100,14 @@ nav {
 
 nav a {
     text-decoration: none;
-
     color: #333;
-
     margin: 0 15px;
-
     font-weight: bold;
 }
 
 nav a:hover {
     color: #0077cc;
 }
-
 
 /* ==============================
    MAIN CONTENT
@@ -212,20 +205,13 @@ section h2 {
 
     nav {
         position: sticky;
-
-        /*
-           Smaller header on mobile
-        */
         top: 105px;
-
         padding: 10px 5px;
     }
 
     nav a {
         display: inline-block;
-
         margin: 5px;
-
         font-size: 14px;
     }
 
@@ -235,10 +221,6 @@ section h2 {
 
     section {
         padding: 20px;
-
-        /*
-           Header + navigation on mobile
-        */
         scroll-margin-top: 160px;
     }
 }

@@ -1,482 +1,135 @@
-// ==========================================
-// WAIT FOR PAGE TO LOAD
-// ==========================================
-
 document.addEventListener("DOMContentLoaded", function () {
-
-
-    // ==========================================
-    // 1. SCROLL REVEAL ANIMATION
-    // ==========================================
-
-    const sections = document.querySelectorAll("section");
-
-    const sectionObserver = new IntersectionObserver(
-        function (entries) {
-
-            entries.forEach(function (entry) {
-
-                if (entry.isIntersecting) {
-
-                    entry.target.classList.add("show");
-
-                    // Animation happens only once
-                    sectionObserver.unobserve(entry.target);
-                }
-
-            });
-
-        },
-        {
-            threshold: 0.08
-        }
-    );
-
-
-    sections.forEach(function (section) {
-        sectionObserver.observe(section);
-    });
-
-
-
-    // ==========================================
-    // 2. NAVIGATION ELEMENTS
-    // ==========================================
-
-    const navLinks = document.querySelectorAll("nav a");
-
     const stickyTop = document.querySelector(".sticky-top");
+    const sections = document.querySelectorAll("main section[id]");
+    const navLinks = document.querySelectorAll("nav a[href^='#']");
 
-
-
-    // ==========================================
-    // 3. SET ACTIVE NAVIGATION
-    // ==========================================
-
-    function setActiveLink(id) {
-
-        navLinks.forEach(function (link) {
-
-            link.classList.remove("active");
-
-            if (
-                link.getAttribute("href") === "#" + id
-            ) {
-
-                link.classList.add("active");
-
-            }
-
-        });
-
+    function getStickyHeight() {
+        return stickyTop ? stickyTop.offsetHeight : 0;
     }
 
-
-
-    // ==========================================
-    // 4. NAVIGATION CLICK
-    // ==========================================
+    function setActiveLink(id) {
+        navLinks.forEach(function (link) {
+            const active = link.getAttribute("href") === "#" + id;
+            link.classList.toggle("active", active);
+        });
+    }
 
     navLinks.forEach(function (link) {
-
         link.addEventListener("click", function (event) {
-
-            event.preventDefault();
-
-
-            const targetId =
-                this.getAttribute("href").substring(1);
-
-
-            const targetSection =
-                document.getElementById(targetId);
-
-
-            if (!targetSection) {
+            const href = link.getAttribute("href") || "";
+            if (!href.startsWith("#")) {
                 return;
             }
 
+            const target = document.getElementById(href.slice(1));
+            if (!target) {
+                return;
+            }
 
-            // Get actual height of sticky header
-            const stickyHeight =
-                stickyTop.offsetHeight;
-
-
-            // Calculate exact scroll position
-            const sectionPosition =
-                targetSection.getBoundingClientRect().top +
-                window.scrollY;
-
-
-            const scrollPosition =
-                sectionPosition -
-                stickyHeight -
-                20;
-
-
-            // Scroll smoothly
-            window.scrollTo({
-
-                top: scrollPosition,
-
-                behavior: "smooth"
-
-            });
-
-
-            // Highlight immediately
-            setActiveLink(targetId);
-
+            event.preventDefault();
+            const targetTop = target.getBoundingClientRect().top + window.scrollY;
+            const offsetTop = Math.max(0, targetTop - getStickyHeight() - 12);
+            window.scrollTo({ top: offsetTop, behavior: "smooth" });
+            setActiveLink(target.id);
         });
-
     });
 
-
-
-    // ==========================================
-    // 5. ACTIVE NAVIGATION WHILE SCROLLING
-    // ==========================================
-
-    function updateActiveNavigation() {
-
-        const stickyHeight =
-            stickyTop.offsetHeight;
-
-
-        // Position where a section becomes active
-        const activationPoint =
-            stickyHeight + 50;
-
-
-        let currentSection = "about";
-
+    function updateActiveOnScroll() {
+        const marker = getStickyHeight() + 24;
+        let currentId = sections.length > 0 ? sections[0].id : "";
 
         sections.forEach(function (section) {
-
-            const sectionTop =
-                section.getBoundingClientRect().top;
-
-
-            if (sectionTop <= activationPoint) {
-
-                currentSection =
-                    section.id;
-
+            if (section.getBoundingClientRect().top <= marker) {
+                currentId = section.id;
             }
-
         });
 
-
-        setActiveLink(currentSection);
-
+        if (currentId) {
+            setActiveLink(currentId);
+        }
     }
 
+    window.addEventListener("scroll", updateActiveOnScroll, { passive: true });
 
-    window.addEventListener(
-        "scroll",
-        updateActiveNavigation
+    const revealObserver = new IntersectionObserver(
+        function (entries, observer) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) {
+                    return;
+                }
+
+                entry.target.classList.add("show");
+                observer.unobserve(entry.target);
+            });
+        },
+        { threshold: 0.1 }
     );
 
+    sections.forEach(function (section) {
+        revealObserver.observe(section);
+    });
 
-
-    // ==========================================
-    // 6. BACK TO TOP BUTTON
-    // ==========================================
-
-    const backToTop =
-        document.createElement("button");
-
-
-    backToTop.innerHTML = "↑";
-
+    const backToTop = document.createElement("button");
     backToTop.className = "back-to-top";
-
-    backToTop.setAttribute(
-        "aria-label",
-        "Back to top"
-    );
-
-
+    backToTop.setAttribute("aria-label", "Back to top");
+    backToTop.textContent = "↑";
     document.body.appendChild(backToTop);
 
+    function toggleBackToTop() {
+        backToTop.classList.toggle("visible", window.scrollY > 320);
+    }
 
+    window.addEventListener("scroll", toggleBackToTop, { passive: true });
 
-    // Show / hide button
-
-    window.addEventListener(
-        "scroll",
-        function () {
-
-            if (window.scrollY > 400) {
-
-                backToTop.classList.add(
-                    "visible"
-                );
-
-            } else {
-
-                backToTop.classList.remove(
-                    "visible"
-                );
-
-            }
-
+    backToTop.addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        const firstSectionId = sections.length > 0 ? sections[0].id : "";
+        if (firstSectionId) {
+            setActiveLink(firstSectionId);
         }
-    );
+    });
 
-
-
-    // Back to top click
-
-    backToTop.addEventListener(
-        "click",
-        function () {
-
-            window.scrollTo({
-
-                top: 0,
-
-                behavior: "smooth"
-
-            });
-
-            setActiveLink("about");
-
-        }
-    );
-
-
-
-    // ==========================================
-    // 7. PROFESSIONAL TYPEWRITER
-    // ==========================================
-
-    const typingText =
-        document.getElementById("typing-text");
-
-
+    const typingText = document.getElementById("typing-text");
     const roles = [
-
         "PhD Research Scholar | IIT Delhi",
-
-        "Computer Science & Engineering ",
-        "Algorithms | Fault-tolerance Graphs"
-
-
-
+        "Computer Science & Engineering",
+        "Algorithms | Fault-Tolerant Graphs"
     ];
 
-
     let roleIndex = 0;
-
     let characterIndex = 0;
+    let isDeleting = false;
 
-    let deleting = false;
-
-
-
-    function typeWriter() {
-
-        if (!typingText) {
+    function typeRole() {
+        if (!typingText || roles.length === 0) {
             return;
         }
 
+        const currentRole = roles[roleIndex];
 
-        const currentRole =
-            roles[roleIndex];
-
-
-        // ------------------------------
-        // TYPING
-        // ------------------------------
-
-        if (!deleting) {
-
-            typingText.textContent =
-                currentRole.substring(
-                    0,
-                    characterIndex + 1
-                );
-
-
-            characterIndex++;
-
-
-            // Finished typing
-            if (
-                characterIndex ===
-                currentRole.length
-            ) {
-
-                deleting = true;
-
-
-                setTimeout(
-                    typeWriter,
-                    1800
-                );
-
-
-                return;
-            }
-
+        if (!isDeleting) {
+            characterIndex += 1;
+        } else {
+            characterIndex -= 1;
         }
 
+        typingText.textContent = currentRole.slice(0, characterIndex);
 
-        // ------------------------------
-        // DELETING
-        // ------------------------------
+        let delay = isDeleting ? 40 : 75;
 
-        else {
-
-            typingText.textContent =
-                currentRole.substring(
-                    0,
-                    characterIndex - 1
-                );
-
-
-            characterIndex--;
-
-
-            // Finished deleting
-            if (characterIndex === 0) {
-
-                deleting = false;
-
-                roleIndex++;
-
-
-                if (
-                    roleIndex >=
-                    roles.length
-                ) {
-
-                    roleIndex = 0;
-
-                }
-
-            }
-
+        if (!isDeleting && characterIndex >= currentRole.length) {
+            isDeleting = true;
+            delay = 1400;
+        } else if (isDeleting && characterIndex <= 0) {
+            isDeleting = false;
+            roleIndex = (roleIndex + 1) % roles.length;
+            delay = 300;
         }
 
-
-        setTimeout(
-            typeWriter,
-            deleting ? 35 : 70
-        );
-
+        setTimeout(typeRole, delay);
     }
 
-
-    // Start typing
-    typeWriter();
-
-
-
-    // ==========================================
-    // 8. PROJECT FILTERS
-    // ==========================================
-
-    const filterButtons =
-        document.querySelectorAll(".filter-btn");
-
-    const projectCards =
-        document.querySelectorAll(".project-card");
-
-    function applyProjectFilter(filter) {
-
-        projectCards.forEach(function (card) {
-
-            const category =
-                card.getAttribute("data-category") || "";
-
-            const matches =
-                filter === "all" ||
-                category.includes(filter);
-
-            card.classList.toggle("hidden", !matches);
-        });
-    }
-
-    filterButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
-            const selected =
-                this.getAttribute("data-filter");
-
-            filterButtons.forEach(function (btn) {
-                btn.classList.remove("active");
-            });
-
-            this.classList.add("active");
-            applyProjectFilter(selected);
-        });
-    });
-
-    applyProjectFilter("all");
-
-
-    // ==========================================
-    // 9. STAT COUNTER ANIMATION
-    // ==========================================
-
-    const statNumbers =
-        document.querySelectorAll(".stat-number");
-
-    const statsObserver =
-        new IntersectionObserver(
-            function (entries, observer) {
-                entries.forEach(function (entry) {
-                    if (!entry.isIntersecting) {
-                        return;
-                    }
-
-                    const statElement =
-                        entry.target;
-
-                    const targetValue =
-                        Number(
-                            statElement.getAttribute("data-target")
-                        ) || 0;
-
-                    let currentValue = 0;
-                    const step = Math.max(1, Math.ceil(targetValue / 30));
-
-                    const timer = setInterval(function () {
-                        currentValue += step;
-                        if (currentValue >= targetValue) {
-                            currentValue = targetValue;
-                            clearInterval(timer);
-                        }
-                        statElement.textContent =
-                            currentValue.toString();
-                    }, 35);
-
-                    observer.unobserve(statElement);
-                });
-            },
-            { threshold: 0.4 }
-        );
-
-    statNumbers.forEach(function (stat) {
-        statsObserver.observe(stat);
-    });
-
-
-    // ==========================================
-    // 10. PAGE LOAD ANIMATION
-    // ==========================================
-
-    document.body.classList.add(
-        "page-loaded"
-    );
-
-
-
-    // ==========================================
-    // 11. INITIAL NAVIGATION
-    // ==========================================
-
-    setActiveLink("about");
-
+    typeRole();
+    updateActiveOnScroll();
+    toggleBackToTop();
 });

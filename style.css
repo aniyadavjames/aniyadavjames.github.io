@@ -11,21 +11,24 @@ body {
 /* Profile header */
 header {
     text-align: center;
-    padding: 60px 20px;
+    padding: 25px 20px;
     background: #222;
     color: white;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 header h1 {
-    font-size: 45px;
+    font-size: 32px;
     margin: 0;
 }
 
 header p {
-    font-size: 20px;
-    margin-top: 10px;
+    font-size: 17px;
+    margin-top: 5px;
 }
-
 
 /* Navigation bar */
 nav {
@@ -107,10 +110,10 @@ section h2 {
 
 /* Profile photo */
 .profile-photo {
-    width: 160px;
-    height: 160px;
+    width: 100px;
+    height: 100px;
     object-fit: cover;
     border-radius: 50%;
     border: 4px solid white;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }

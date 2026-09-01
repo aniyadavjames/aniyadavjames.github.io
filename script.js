@@ -1,23 +1,19 @@
 // ==========================================
-// 1. SCROLL REVEAL ANIMATION
+// SCROLL REVEAL ANIMATION
 // ==========================================
 
 const sections = document.querySelectorAll("section");
 
 const sectionObserver = new IntersectionObserver(
     (entries) => {
-
         entries.forEach((entry) => {
-
             if (entry.isIntersecting) {
                 entry.target.classList.add("show");
             }
-
         });
-
     },
     {
-        threshold: 0.15
+        threshold: 0.1
     }
 );
 
@@ -27,49 +23,123 @@ sections.forEach((section) => {
 
 
 // ==========================================
-// 2. ACTIVE NAVIGATION
+// NAVIGATION
 // ==========================================
 
 const navLinks = document.querySelectorAll("nav a");
 
-const navObserver = new IntersectionObserver(
-    (entries) => {
 
-        entries.forEach((entry) => {
+// Set active navigation item
 
-            if (entry.isIntersecting) {
+function setActiveLink(id) {
 
-                navLinks.forEach((link) => {
-                    link.classList.remove("active");
-                });
+    navLinks.forEach((link) => {
 
-                const activeLink = document.querySelector(
-                    `nav a[href="#${entry.target.id}"]`
-                );
+        link.classList.remove("active");
 
-                if (activeLink) {
-                    activeLink.classList.add("active");
-                }
-            }
+        if (link.getAttribute("href") === "#" + id) {
+            link.classList.add("active");
+        }
 
+    });
+}
+
+
+// ==========================================
+// NAVIGATION CLICK
+// ==========================================
+
+navLinks.forEach((link) => {
+
+    link.addEventListener("click", function (event) {
+
+        event.preventDefault();
+
+        const targetId = this.getAttribute("href").substring(1);
+
+        const targetSection = document.getElementById(targetId);
+
+        if (!targetSection) return;
+
+
+        // Get actual height of sticky header + navigation
+
+        const stickyHeader =
+            document.querySelector(".sticky-top");
+
+        const headerHeight =
+            stickyHeader.offsetHeight;
+
+
+        // Position section below sticky header
+
+        const targetPosition =
+            targetSection.getBoundingClientRect().top +
+            window.pageYOffset -
+            headerHeight -
+            20;
+
+
+        window.scrollTo({
+            top: targetPosition,
+            behavior: "smooth"
         });
 
-    },
-    {
-        threshold: 0.4
-    }
-);
 
-sections.forEach((section) => {
-    navObserver.observe(section);
+        // Immediately highlight clicked item
+
+        setActiveLink(targetId);
+
+    });
+
 });
 
 
 // ==========================================
-// 3. BACK TO TOP BUTTON
+// ACTIVE NAVIGATION WHILE SCROLLING
 // ==========================================
 
-const backToTop = document.createElement("button");
+function updateActiveNavigation() {
+
+    const stickyHeader =
+        document.querySelector(".sticky-top");
+
+    const headerHeight =
+        stickyHeader.offsetHeight;
+
+
+    let currentSection = null;
+
+    sections.forEach((section) => {
+
+        const sectionTop =
+            section.getBoundingClientRect().top;
+
+        if (sectionTop <= headerHeight + 80) {
+            currentSection = section;
+        }
+
+    });
+
+
+    if (currentSection) {
+        setActiveLink(currentSection.id);
+    }
+}
+
+
+window.addEventListener(
+    "scroll",
+    updateActiveNavigation
+);
+
+
+// ==========================================
+// BACK TO TOP BUTTON
+// ==========================================
+
+const backToTop =
+    document.createElement("button");
 
 backToTop.innerHTML = "↑";
 
@@ -83,9 +153,13 @@ document.body.appendChild(backToTop);
 window.addEventListener("scroll", () => {
 
     if (window.scrollY > 400) {
+
         backToTop.classList.add("visible");
+
     } else {
+
         backToTop.classList.remove("visible");
+
     }
 
 });
@@ -100,20 +174,27 @@ backToTop.addEventListener("click", () => {
         behavior: "smooth"
     });
 
+    setActiveLink("about");
+
 });
 
 
 // ==========================================
-// 4. TYPING ANIMATION
+// TYPING ANIMATION
 // ==========================================
 
-const typingElement = document.querySelector(".profile-details p");
+// Select the first profile paragraph
+
+const typingElement =
+    document.querySelector(".profile-details p");
+
 
 const roles = [
     "PhD Research Scholar | IIT Delhi",
     "Computer Science & Engineering Researcher",
     "Researcher | Developer"
 ];
+
 
 let roleIndex = 0;
 let characterIndex = 0;
@@ -122,20 +203,34 @@ let deleting = false;
 
 function typeEffect() {
 
-    const currentRole = roles[roleIndex];
+    if (!typingElement) return;
+
+    const currentRole =
+        roles[roleIndex];
+
 
     if (!deleting) {
 
         typingElement.textContent =
-            currentRole.substring(0, characterIndex + 1);
+            currentRole.substring(
+                0,
+                characterIndex + 1
+            );
 
         characterIndex++;
 
-        if (characterIndex === currentRole.length) {
+
+        if (
+            characterIndex ===
+            currentRole.length
+        ) {
 
             deleting = true;
 
-            setTimeout(typeEffect, 1800);
+            setTimeout(
+                typeEffect,
+                1800
+            );
 
             return;
         }
@@ -143,9 +238,13 @@ function typeEffect() {
     } else {
 
         typingElement.textContent =
-            currentRole.substring(0, characterIndex - 1);
+            currentRole.substring(
+                0,
+                characterIndex - 1
+            );
 
         characterIndex--;
+
 
         if (characterIndex === 0) {
 
@@ -153,30 +252,39 @@ function typeEffect() {
 
             roleIndex++;
 
-            if (roleIndex === roles.length) {
+            if (
+                roleIndex >= roles.length
+            ) {
                 roleIndex = 0;
             }
+
         }
+
     }
+
 
     setTimeout(
         typeEffect,
-        deleting ? 50 : 80
+        deleting ? 40 : 70
     );
 }
 
-
-// Start typing animation
 
 typeEffect();
 
 
 // ==========================================
-// 5. PAGE LOAD ANIMATION
+// PAGE LOAD
 // ==========================================
 
 window.addEventListener("load", () => {
 
-    document.body.classList.add("page-loaded");
+    document.body.classList.add(
+        "page-loaded"
+    );
+
+    // Start with About highlighted
+
+    setActiveLink("about");
 
 });

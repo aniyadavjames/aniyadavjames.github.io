@@ -259,9 +259,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         "PhD Research Scholar | IIT Delhi",
 
-        "Computer Science & Engineering Researcher",
+        "Computer Science & Engineering ",
+        "Algorithms | Fault-tolerance Graphs"
 
-        "Researcher | Developer"
+
 
     ];
 

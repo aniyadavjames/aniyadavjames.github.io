@@ -375,7 +375,96 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ==========================================
-    // 8. PAGE LOAD ANIMATION
+    // 8. PROJECT FILTERS
+    // ==========================================
+
+    const filterButtons =
+        document.querySelectorAll(".filter-btn");
+
+    const projectCards =
+        document.querySelectorAll(".project-card");
+
+    function applyProjectFilter(filter) {
+
+        projectCards.forEach(function (card) {
+
+            const category =
+                card.getAttribute("data-category") || "";
+
+            const matches =
+                filter === "all" ||
+                category.includes(filter);
+
+            card.classList.toggle("hidden", !matches);
+        });
+    }
+
+    filterButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            const selected =
+                this.getAttribute("data-filter");
+
+            filterButtons.forEach(function (btn) {
+                btn.classList.remove("active");
+            });
+
+            this.classList.add("active");
+            applyProjectFilter(selected);
+        });
+    });
+
+    applyProjectFilter("all");
+
+
+    // ==========================================
+    // 9. STAT COUNTER ANIMATION
+    // ==========================================
+
+    const statNumbers =
+        document.querySelectorAll(".stat-number");
+
+    const statsObserver =
+        new IntersectionObserver(
+            function (entries, observer) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+
+                    const statElement =
+                        entry.target;
+
+                    const targetValue =
+                        Number(
+                            statElement.getAttribute("data-target")
+                        ) || 0;
+
+                    let currentValue = 0;
+                    const step = Math.max(1, Math.ceil(targetValue / 30));
+
+                    const timer = setInterval(function () {
+                        currentValue += step;
+                        if (currentValue >= targetValue) {
+                            currentValue = targetValue;
+                            clearInterval(timer);
+                        }
+                        statElement.textContent =
+                            currentValue.toString();
+                    }, 35);
+
+                    observer.unobserve(statElement);
+                });
+            },
+            { threshold: 0.4 }
+        );
+
+    statNumbers.forEach(function (stat) {
+        statsObserver.observe(stat);
+    });
+
+
+    // ==========================================
+    // 10. PAGE LOAD ANIMATION
     // ==========================================
 
     document.body.classList.add(
@@ -385,7 +474,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ==========================================
-    // 9. INITIAL NAVIGATION
+    // 11. INITIAL NAVIGATION
     // ==========================================
 
     setActiveLink("about");

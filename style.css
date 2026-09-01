@@ -89,10 +89,48 @@ header {
     margin: 0 0 5px 0;
 }
 
-.profile-details p {
+/* ==============================
+   TYPING EFFECT
+   ============================== */
+
+.typing-container {
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+
     font-size: 17px;
 
-    margin: 3px 0;
+    white-space: nowrap;
+
+    overflow: hidden;
+}
+
+#typing-text {
+    display: inline-block;
+}
+
+.typing-cursor {
+    display: inline-block;
+
+    margin-left: 3px;
+
+    font-weight: bold;
+
+    animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0;
+    }
 }
 
 
@@ -257,9 +295,10 @@ section h2 {
     }
 
 
-    .profile-details p {
-        font-size: 14px;
-    }
+.typing-container {
+    height: 24px;
+    font-size: 14px;
+}
 
 
     .linkedin-button {

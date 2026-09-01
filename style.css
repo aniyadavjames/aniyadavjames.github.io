@@ -21,3 +21,17 @@ h2 {
 p {
     font-size: 17px;
 }
+.education-item {
+    padding: 15px;
+    margin: 15px 0;
+    border-left: 4px solid #333;
+    background: #f5f5f5;
+}
+
+.education-item h3 {
+    margin: 0;
+}
+
+.education-item p {
+    margin: 5px 0 0;
+}
